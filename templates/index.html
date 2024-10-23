@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lấy mã giảm giá Shopee</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Lấy mã giảm giá cho sản phẩm Shopee</h1>
+    <p>Nhập link sản phẩm Shopee:</p>
+    
+    <input type="text" id="shopeeUrl" placeholder="Dán link sản phẩm Shopee tại đây">
+    <button onclick="getCoupons()">OK</button>
+
+    <div id="result"></div>
+
+    <script>
+        function getCoupons() {
+            const shopeeUrl = document.getElementById('shopeeUrl').value;
+            
+            if (!shopeeUrl) {
+                alert('Vui lòng nhập URL sản phẩm!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('url', shopeeUrl);
+
+            fetch('/get-coupons', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                if (data.coupons) {
+                    resultDiv.innerHTML = `<h2>Mã giảm giá:</h2><ul>${data.coupons.map(coupon => `<li>${coupon}</li>`).join('')}</ul>`;
+                } else {
+                    resultDiv.innerHTML = `<p>${data.error}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi:', error);
+                document.getElementById('result').innerHTML = '<p>Có lỗi xảy ra.</p>';
+            });
+        }
+    </script>
+
+</body>
+</html>
